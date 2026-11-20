@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Compact Media Admin (Demo)</title>
+<style>
+:root{--bg:#F4F6FA;--card:#fff;--tx:#0f172a;--mu:#64748b;--bd:#e2e8f0;--blue:#155EEF;--ok:#0f9d58;--warn:#d97706;--bad:#dc2626;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0b1220;--card:#121a2c;--tx:#eef2f9;--mu:#94a3b8;--bd:#22304a}}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,Segoe UI,sans-serif;line-height:1.5}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.login{min-height:100vh;display:grid;place-items:center;padding:20px}
+.box{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:22px}
+.login .box{width:min(380px,100%)}
+h1,h2,h3{margin:0;letter-spacing:-.02em}
+input,select,textarea{width:100%;background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:10px 12px}
+label{display:block;font-size:.8rem;font-weight:600;color:var(--mu);margin:12px 0 4px}
+.btn{background:var(--blue);color:#fff;border:0;border-radius:8px;padding:9px 16px;font-weight:600;cursor:pointer}
+.btn.s{background:none;color:var(--tx);border:1px solid var(--bd)}.btn.d{background:var(--bad)}.btn.sm{padding:5px 10px;font-size:.8rem}
+.app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+aside{background:var(--card);border-right:1px solid var(--bd);padding:20px 14px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:4px}
+aside .lg{font-weight:800;font-size:1.1rem;padding:0 10px 18px}aside .lg i{color:var(--blue);font-style:normal}
+aside button{all:unset;box-sizing:border-box;cursor:pointer;padding:10px 12px;border-radius:8px;color:var(--mu);font-weight:600;display:flex;justify-content:space-between}
+aside button:hover{background:var(--bg)}aside button.on{background:var(--blue);color:#fff}aside button:focus-visible{outline:2px solid var(--blue)}
+.dot{background:var(--warn);color:#fff;border-radius:999px;font-size:.7rem;padding:0 7px}
+main{padding:28px clamp(16px,3vw,36px);min-width:0}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:22px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:22px}
+.stat b{font-size:2rem;display:block;line-height:1.1}.stat span{color:var(--mu);font-size:.85rem}
+.row{display:flex;gap:12px;align-items:center;padding:14px 0;border-top:1px solid var(--bd)}.row:first-of-type{border-top:0}
+.row .t{flex:1;min-width:0}.row .t b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.row .t small{color:var(--mu)}
+.th{width:52px;height:52px;border-radius:10px;background:linear-gradient(135deg,#155EEF,#62A0FF);flex:none;background-size:cover;background-position:center}
+.acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.bd{font-size:.72rem;font-weight:700;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.live{background:#dcfce7;color:#166534}.draft{background:#e2e8f0;color:#334155}.pending{background:#fef3c7;color:#92400e}.rejected{background:#fee2e2;color:#991b1b}
+.tabs{display:flex;gap:6px;margin:12px 0;flex-wrap:wrap}.tabs button{border:1px solid var(--bd);background:none;border-radius:999px;padding:5px 14px;cursor:pointer;color:var(--mu)}.tabs button.on{background:var(--tx);color:var(--bg)}
+.empty{color:var(--mu);padding:26px 0;text-align:center}
+.note{background:#eff6ff;color:#1e40af;border-radius:10px;padding:10px 14px;font-size:.85rem;margin-bottom:18px}
+dialog{border:1px solid var(--bd);border-radius:14px;background:var(--card);color:var(--tx);width:min(520px,94vw);padding:22px;max-height:92vh}dialog::backdrop{background:rgba(0,0,0,.5)}
+.toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 18px;border-radius:999px;font-size:.85rem;opacity:0;transition:.3s;pointer-events:none}.toast.on{opacity:1}
+.mb{display:none}
+@media(max-width:800px){.app{grid-template-columns:1fr}aside{position:static;height:auto;flex-direction:row;overflow-x:auto;padding:10px}aside .lg{display:none}aside button{white-space:nowrap}.row{flex-wrap:wrap}.acts{justify-content:flex-start;width:100%}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body>
+<div class="login" id="login"><form class="box" id="lf"><h2>Compact Media Admin</h2><p style="color:var(--mu);margin:6px 0 0">Demo dashboard. Demo password: <b>demo</b></p>
+<label for="pw">Password</label><input id="pw" type="password" autocomplete="off"><p id="le" style="color:var(--bad);font-size:.85rem;min-height:1.2em"></p><button class="btn" style="width:100%">Log in</button></form></div>
+
+<div class="app" id="app" hidden><aside id="sb"></aside><main id="mn"></main></div>
+
+<dialog id="fd"><form id="ff"></form></dialog>
+<dialog id="cd"><h3>Delete this item?</h3><p style="color:var(--mu)">This can’t be undone.</p><div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn s" id="cn">Cancel</button><button class="btn d" id="cy">Delete</button></div></dialog>
+<div class="toast" id="ts" role="status"></div>
+
+<script>
+const $=s=>document.querySelector(s);let uid=10;
+const D={
+work:[{id:1,title:"Demo social media campaign",client:"Demo client",cat:"Social Media",desc:"Demo project for preview only.",status:"live"},{id:2,title:"Demo brand identity",client:"Demo client",cat:"Design",desc:"Demo project for preview only.",status:"draft"}],
+testi:[{id:3,name:"Demo Client",biz:"Demo Business",service:"Social media marketing",rating:"5",text:"Demo testimonial added by the owner.",status:"live",featured:true}],
+feed:[{id:4,name:"Demo Customer",biz:"Demo Shop",service:"Google Ads",rating:"5",text:"Demo feedback submitted through the website form.",status:"pending",featured:false},{id:5,name:"Demo Customer 2",biz:"",service:"SEO",rating:"4",text:"Another demo feedback waiting for approval.",status:"pending",featured:false},{id:6,name:"Demo Customer 3",biz:"Demo Cafe",service:"Video editing",rating:"5",text:"Demo feedback that is already approved.",status:"live",featured:false}]};
+const SV=["Social media marketing","Paid advertising","Video editing","Graphic design","Website development","Google Ads","SEO"];
+const C={
+work:{name:"Our Work",one:"project",sub:"Projects shown in the Work section of the website.",st:["live","draft"],title:"title",meta:r=>`${r.client||"No client"} · ${r.cat}`,
+ f:[["title","Project title","text"],["client","Client","text"],["cat","Category","sel",["Social Media","Ads","Design","Video","Web","SEO"]],["desc","Description","area"],["challenge","Challenge","area"],["strategy","Strategy","area"],["outcome","Outcome (real results only)","area"],["img","Cover image","file"]]},
+testi:{name:"Our Testimonials",one:"testimonial",sub:"Testimonials you add yourself, such as WhatsApp screenshots or messages from clients.",st:["live","draft"],title:"name",meta:r=>`${"★".repeat(+r.rating)} · ${r.biz||"No business"} · ${r.service}`,
+ f:[["name","Client name","text"],["biz","Business","text"],["service","Service","sel",SV],["rating","Rating","sel",["5","4","3","2","1"]],["text","Testimonial","area"],["img","Photo or screenshot","file"]]},
+feed:{name:"Customer Feedback",one:"feedback",sub:"Reviews submitted by customers on the website. Approve to publish. Emails stay private.",st:["pending","live","rejected"],title:"name",meta:r=>`${"★".repeat(+r.rating)} · ${r.service||"General"} · ${r.text.slice(0,60)}`,
+ f:[["name","Customer name","text"],["biz","Business","text"],["service","Service","sel",SV],["rating","Rating","sel",["5","4","3","2","1"]],["text","Review text (edit formatting only)","area"]]}};
+const lab={live:"Live",draft:"Draft",pending:"Pending",rejected:"Rejected"};
+let view="ov",tab="all",cur=null;
+const toast=m=>{const t=$("#ts");t.textContent=m;t.classList.add("on");setTimeout(()=>t.classList.remove("on"),2000)};
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+$("#lf").onsubmit=e=>{e.preventDefault();if($("#pw").value=="demo"){$("#login").hidden=true;$("#app").hidden=false;go("ov")}else $("#le").textContent="Wrong password. Use “demo”."};
+function nav(){const p=D.feed.filter(x=>x.status=="pending").length;
+$("#sb").innerHTML=`<div class="lg">Compact<i>Media</i></div>`+[["ov","Overview"],["live","Live now"],["work","Our Work"],["testi","Our Testimonials"],["feed","Customer Feedback"]].map(([k,n])=>`<button data-v="${k}" class="${view==k?"on":""}">${n}${k=="feed"&&p?`<span class="dot">${p}</span>`:""}</button>`).join("")+`<button data-v="out" style="margin-top:auto">Logout</button>`}
+$("#sb").onclick=e=>{const b=e.target.closest("button");if(b)go(b.dataset.v)};
+function go(v){if(v=="out"){$("#app").hidden=true;$("#login").hidden=false;$("#pw").value="";return}view=v;tab="all";render()}
+function render(){nav();const m=$("#mn");
+if(view=="ov"){const L=k=>D[k].filter(x=>x.status=="live").length,p=D.feed.filter(x=>x.status=="pending").length;
+m.innerHTML=`<div class="top"><div><h1>Overview</h1><p style="color:var(--mu);margin:4px 0 0">What’s live on the website right now.</p></div></div>
+<div class="note">Demo mode: changes are kept only until you refresh this page, and nothing is sent to the real website yet.</div>
+<div class="stats"><div class="box stat"><b>${L("work")}</b><span>Live projects</span></div><div class="box stat"><b>${L("testi")}</b><span>Live testimonials</span></div><div class="box stat"><b>${L("feed")}</b><span>Live customer feedback</span></div><div class="box stat"><b>${p}</b><span>Feedback waiting for approval</span></div><div class="box stat"><b>${D.work.filter(x=>x.status=="draft").length+D.testi.filter(x=>x.status=="draft").length}</b><span>Drafts</span></div></div>
+<div class="stats" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">${["work","testi","feed"].map(k=>`<div class="box"><h3>${C[k].name}</h3><p style="color:var(--mu);font-size:.85rem">${C[k].sub}</p><button class="btn" data-go="${k}">Manage</button></div>`).join("")}</div>`;
+m.onclick=e=>{const b=e.target.closest("[data-go]");if(b)go(b.dataset.go)};return}
+if(view=="live"){m.innerHTML=`<div class="top"><div><h1>Live now</h1><p style="color:var(--mu);margin:4px 0 0">Everything visitors can see on the website.</p></div></div>`+["work","testi","feed"].map(k=>{const r=D[k].filter(x=>x.status=="live");return `<div class="box" style="margin-bottom:16px"><h3>${C[k].name} (${r.length})</h3>${r.map(x=>`<div class="row"><div class="th"></div><div class="t"><b>${esc(x[C[k].title])}</b><small>${esc(C[k].meta(x))}</small></div><span class="bd live">Live</span></div>`).join("")||`<div class="empty">Nothing live here yet.</div>`}</div>`}).join("");m.onclick=null;return}
+const c=C[view],rows=D[view].filter(x=>tab=="all"||x.status==tab);
+m.innerHTML=`<div class="top"><div><h1>${c.name}</h1><p style="color:var(--mu);margin:4px 0 0">${c.sub}</p></div>${view=="feed"?`<button class="btn s" data-a="sim">Simulate customer submission</button>`:`<button class="btn" data-a="add">+ Add ${c.one}</button>`}</div>
+<div class="tabs">${["all",...c.st].map(t=>`<button data-t="${t}" class="${tab==t?"on":""}">${t=="all"?"All":lab[t]} (${t=="all"?D[view].length:D[view].filter(x=>x.status==t).length})</button>`).join("")}</div>
+<div class="box">${rows.map(x=>`<div class="row"><div class="th" ${x.img?`style="background-image:url(${x.img})"`:""}></div><div class="t"><b>${esc(x[c.title])}${x.featured?" ★":""}</b><small>${esc(c.meta(x))}</small></div><span class="bd ${x.status}">${lab[x.status]}</span>
+<div class="acts" data-id="${x.id}">${view=="feed"?(x.status!="live"?`<button class="btn sm" data-a="live">Approve</button>`:`<button class="btn s sm" data-a="draft">Unpublish</button>`)+(x.status!="rejected"?`<button class="btn s sm" data-a="rejected">Reject</button>`:""):`<button class="btn s sm" data-a="${x.status=="live"?"draft":"live"}">${x.status=="live"?"Unpublish":"Publish"}</button>`}${view!="work"?`<button class="btn s sm" data-a="feat">${x.featured?"Unfeature":"Feature"}</button>`:""}<button class="btn s sm" data-a="edit">Edit</button><button class="btn s sm" data-a="del">Delete</button></div></div>`).join("")||`<div class="empty">Nothing here yet.</div>`}</div>`;
+m.onclick=e=>{const t=e.target.closest("[data-t]");if(t){tab=t.dataset.t;return render()}const b=e.target.closest("[data-a]");if(!b)return;const a=b.dataset.a,id=+(b.closest("[data-id]")?.dataset.id||0),it=D[view].find(x=>x.id==id);
+if(a=="add")return form();if(a=="edit")return form(it);if(a=="del"){cur=it;return $("#cd").showModal()}
+if(a=="sim"){D.feed.unshift({id:++uid,name:"Demo Customer "+uid,biz:"",service:"SEO",rating:"5",text:"New demo feedback just submitted from the website form.",status:"pending",featured:false});toast("New feedback received. It is Pending.");return render()}
+if(a=="feat"){it.featured=!it.featured;toast(it.featured?"Featured":"Unfeatured")}else{it.status=a;toast({live:"Now live on the website",draft:"Moved to drafts",rejected:"Rejected"}[a])}render()}}
+$("#cn").onclick=()=>$("#cd").close();$("#cy").onclick=()=>{D[view]=D[view].filter(x=>x!==cur);$("#cd").close();toast("Deleted");render()};
+function form(it){const c=C[view];cur=it||null;
+$("#ff").innerHTML=`<h3>${it?"Edit":"Add"} ${c.one}</h3>`+c.f.map(([k,l,t,o])=>{const v=it?.[k]??"",i="f_"+k;return `<label for="${i}">${l}</label>`+(t=="area"?`<textarea id="${i}" name="${k}" rows="3">${esc(v)}</textarea>`:t=="sel"?`<select id="${i}" name="${k}">${o.map(x=>`<option ${x==v?"selected":""}>${x}</option>`).join("")}</select>`:t=="file"?`<input id="${i}" type="file" accept="image/*" name="${k}">`:`<input id="${i}" name="${k}" value="${esc(v)}" ${k==c.title?"required":""}>`)}).join("")+
+(view=="feed"?"":`<label for="f_st">Status</label><select id="f_st" name="status">${c.st.map(s=>`<option value="${s}" ${(it?.status||"draft")==s?"selected":""}>${lab[s]}</option>`).join("")}</select>`)+`<p id="fe" style="color:var(--bad);font-size:.85rem;min-height:1.2em"></p><div style="display:flex;gap:10px;justify-content:flex-end"><button type="button" class="btn s" id="fx">Cancel</button><button class="btn">Save</button></div>`;
+$("#fx").onclick=()=>$("#fd").close();$("#fd").showModal()}
+$("#ff").onsubmit=async e=>{e.preventDefault();const c=C[view],fm=new FormData(e.target),o={};
+fm.forEach((v,k)=>{if(!(v instanceof File))o[k]=v});
+if(!String(o[c.title]||"").trim())return $("#fe").textContent="Please fill in the required name or title.";
+if(view!="work"&&!String(o.text||"").trim())return $("#fe").textContent="Please add the text.";
+const f=fm.get("img");if(f&&f.size){if(f.size>3e6)return $("#fe").textContent="Image must be under 3 MB.";o.img=await new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result);fr.readAsDataURL(f)})}
+if(cur)Object.assign(cur,o);else D[view].unshift({id:++uid,featured:false,status:"draft",...o});
+$("#fd").close();toast("Saved");render()};
+</script></body></html>
